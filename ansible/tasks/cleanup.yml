@@ -1,0 +1,71 @@
+---
+- name: Check available disk space
+  shell: df --output=avail / | tail -1
+  register: available_space
+  changed_when: false
+
+- name: Display current disk usage
+  shell: df -h /
+  register: disk_usage
+  changed_when: false
+
+- name: Show disk usage
+  debug:
+    msg: "{{ disk_usage.stdout_lines }}"
+
+- name: Clean apt cache
+  shell: |
+    apt clean
+    apt autoremove -y
+    apt autoclean
+  become: true
+
+- name: Clean system logs (keep last 7 days)
+  shell: journalctl --vacuum-time=7d
+  become: true
+
+- name: Clean temporary files
+  shell: |
+    find /tmp -type f -atime +7 -delete 2>/dev/null || true
+    find /var/tmp -type f -atime +7 -delete 2>/dev/null || true
+  become: true
+
+- name: Clean old log files
+  shell: |
+    find /var/log -name "*.log.*" -type f -mtime +7 -delete 2>/dev/null || true
+    find /var/log -name "*.gz" -type f -mtime +7 -delete 2>/dev/null || true
+  become: true
+
+- name: Check if Docker is installed
+  shell: which docker
+  register: docker_check
+  ignore_errors: true
+  changed_when: false
+
+- name: Clean Docker system (if Docker is installed)
+  shell: docker system prune -f
+  become: true
+  when: docker_check.rc == 0
+
+- name: Check available space after cleanup
+  shell: df --output=avail / | tail -1
+  register: available_space_after
+  changed_when: false
+
+- name: Display disk space after cleanup
+  shell: df -h /
+  register: disk_space_after
+  changed_when: false
+
+- name: Show disk space after cleanup
+  debug:
+    msg: "{{ disk_space_after.stdout_lines }}"
+
+- name: Verify sufficient space (at least 1GB = 1048576 KB)
+  fail:
+    msg: "Insufficient disk space: {{ available_space_after.stdout }} KB available, need at least 1048576 KB (1GB)"
+  when: available_space_after.stdout|int < 1048576
+
+- name: Display space freed
+  debug:
+    msg: "Space freed: {{ ((available_space_after.stdout|int - available_space.stdout|int) / 1024)|round(0) }} MB"

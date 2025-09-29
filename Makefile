@@ -30,7 +30,11 @@ install-local: install-deps ## Deploy local para desarrollo
 	fi
 	@$(SCRIPTS_DIR)/local-deploy.sh
 
-install-prod: ## Deploy en producción con Ansible
+install-ansible-deps: ## Instalar dependencias de Ansible
+	@echo "📦 Instalando colecciones de Ansible..."
+	@cd $(ANSIBLE_DIR) && ansible-galaxy collection install -r requirements.yml
+
+install-prod: install-ansible-deps ## Deploy en producción con Ansible
 	@echo "🌐 Iniciando deploy en producción..."
 	@command -v ansible-playbook >/dev/null 2>&1 || { echo "Ansible no está instalado. Instálalo: pip install ansible"; exit 1; }
 	@if [ ! -f $(ANSIBLE_DIR)/inventory/hosts.yml ]; then \
@@ -64,7 +68,31 @@ clean: ## Limpiar contenedores y volúmenes
 	@docker system prune -f
 
 ansible-check: ## Verificar configuración de Ansible
-	@cd $(ANSIBLE_DIR) && ansible all -m ping
+	@cd $(ANSIBLE_DIR) && ansible all -m shell -a 'whoami'
+
+server-status: ## Verificar estado completo del servidor
+	@$(SCRIPTS_DIR)/check-server-status.sh
+
+cleanup-server: ## Limpiar archivos temporales y cache en el servidor
+	@$(SCRIPTS_DIR)/cleanup-server.sh
+
+fix-ports: ## Liberar puertos 80 y 443 para n8n
+	@$(SCRIPTS_DIR)/fix-port-conflicts.sh
+
+inspect: ## Inspeccionar estado del servidor (archivos, configuración, logs)
+	@echo "🔍 Inspeccionando estado del servidor..."
+	@chmod +x $(SCRIPTS_DIR)/inspect-server.sh
+	@$(SCRIPTS_DIR)/inspect-server.sh
+
+fix-ssl: ## Crear enlaces simbólicos SSL faltantes
+	@echo "🔒 Reparando enlaces SSL..."
+	@chmod +x $(SCRIPTS_DIR)/fix-ssl-links.sh
+	@$(SCRIPTS_DIR)/fix-ssl-links.sh
+
+fix-websockets: ## Solucionar problemas de WebSocket (Invalid Origin)
+	@echo "🔧 Solucionando WebSockets..."
+	@chmod +x $(SCRIPTS_DIR)/fix-websockets.sh
+	@$(SCRIPTS_DIR)/fix-websockets.sh
 
 ansible-logs: ## Ver logs en producción
 	@cd $(ANSIBLE_DIR) && ansible all -m shell -a 'docker-compose -f /opt/n8n/docker-compose.yml logs --tail=50 n8n'

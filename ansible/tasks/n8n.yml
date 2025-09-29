@@ -48,10 +48,10 @@
     mode: '0755'
 
 - name: Start n8n services with Docker Compose
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ docker_data_dir }}"
     state: present
-    pull: true
+    pull: always
 
 - name: Ensure Docker service is enabled and starts on boot
   systemd:

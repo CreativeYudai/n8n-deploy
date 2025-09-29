@@ -20,6 +20,9 @@
       - unattended-upgrades
 
   tasks:
+    - name: Clean system and check disk space
+      include_tasks: tasks/cleanup.yml
+
     - name: Update apt cache
       apt:
         update_cache: yes

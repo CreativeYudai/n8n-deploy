@@ -24,6 +24,10 @@ fi
 # Cambiar al directorio de Ansible
 cd ansible
 
+# Instalar colecciones requeridas de Ansible
+echo "📦 Instalando colecciones de Ansible..."
+ansible-galaxy collection install -r requirements.yml
+
 # Ejecutar el playbook
 echo "🏗️ Ejecutando playbook de Ansible..."
 ansible-playbook site.yml

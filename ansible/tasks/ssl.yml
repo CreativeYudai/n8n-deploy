@@ -1,17 +1,18 @@
 ---
+- name: Clean system before installing certbot
+  include_tasks: cleanup.yml
+
 - name: Install certbot
   apt:
     name:
       - certbot
       - python3-certbot-nginx
     state: present
+    clean: true
 
-- name: Stop nginx temporarily for certificate generation
-  docker_compose:
-    project_src: "{{ docker_data_dir }}"
-    services:
-      - nginx
-    state: absent
+- name: Stop nginx container temporarily for certificate generation
+  shell: cd {{ docker_data_dir }} && docker-compose stop nginx
+  ignore_errors: true
 
 - name: Generate SSL certificate
   command: >
@@ -22,6 +23,15 @@
     --domains {{ domain_name }}
   args:
     creates: "/etc/letsencrypt/live/{{ domain_name }}/fullchain.pem"
+
+- name: Create certbot directories in docker volume
+  file:
+    path: "{{ docker_data_dir }}/certbot/conf/{{ item }}/{{ domain_name }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - live
+    - archive
 
 - name: Copy SSL certificates to docker volume
   copy:
@@ -37,12 +47,8 @@
     remote_src: true
     mode: preserve
 
-- name: Start nginx with SSL
-  docker_compose:
-    project_src: "{{ docker_data_dir }}"
-    services:
-      - nginx
-    state: present
+- name: Start all services including nginx with SSL
+  shell: cd {{ docker_data_dir }} && docker-compose up -d
 
 - name: Create certificate renewal cron job
   cron:
