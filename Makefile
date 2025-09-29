@@ -94,6 +94,11 @@ fix-websockets: ## Solucionar problemas de WebSocket (Invalid Origin)
 	@chmod +x $(SCRIPTS_DIR)/fix-websockets.sh
 	@$(SCRIPTS_DIR)/fix-websockets.sh
 
+optimize-n8n: ## Optimizar configuración de n8n (eliminar warnings)
+	@echo "⚡ Optimizando n8n..."
+	@chmod +x $(SCRIPTS_DIR)/optimize-n8n.sh
+	@$(SCRIPTS_DIR)/optimize-n8n.sh
+
 ansible-logs: ## Ver logs en producción
 	@cd $(ANSIBLE_DIR) && ansible all -m shell -a 'docker-compose -f /opt/n8n/docker-compose.yml logs --tail=50 n8n'
 
