@@ -1,0 +1,45 @@
+---
+- name: Check if swap exists
+  command: swapon --show
+  register: swap_status
+  failed_when: false
+  changed_when: false
+
+- name: Create swap file
+  command: fallocate -l {{ swap_size }} /swapfile
+  when: swap_status.stdout == ""
+
+- name: Set swap file permissions
+  file:
+    path: /swapfile
+    mode: '0600'
+  when: swap_status.stdout == ""
+
+- name: Make swap file
+  command: mkswap /swapfile
+  when: swap_status.stdout == ""
+
+- name: Enable swap file
+  command: swapon /swapfile
+  when: swap_status.stdout == ""
+
+- name: Add swap to fstab
+  lineinfile:
+    path: /etc/fstab
+    line: '/swapfile none swap sw 0 0'
+    state: present
+  when: swap_status.stdout == ""
+
+- name: Set swappiness
+  sysctl:
+    name: vm.swappiness
+    value: '10'
+    state: present
+    reload: true
+
+- name: Set vfs_cache_pressure
+  sysctl:
+    name: vm.vfs_cache_pressure
+    value: '50'
+    state: present
+    reload: true

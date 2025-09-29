@@ -1,0 +1,19 @@
+#!/bin/bash
+# Script de inicio para n8n con Docker Compose
+# Este script se ejecuta al arrancar el sistema
+
+set -e
+
+cd {{ docker_data_dir }}
+
+# Esperar a que Docker esté disponible
+while ! docker info > /dev/null 2>&1; do
+    echo "Esperando a que Docker esté disponible..."
+    sleep 2
+done
+
+# Iniciar los servicios con Docker Compose
+echo "Iniciando servicios de n8n..."
+/usr/local/bin/docker-compose up -d
+
+echo "n8n iniciado correctamente"

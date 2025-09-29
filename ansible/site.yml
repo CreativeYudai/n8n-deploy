@@ -1,0 +1,74 @@
+---
+- name: Deploy n8n with Docker and dependencies
+  hosts: n8n_servers
+  become: true
+  gather_facts: true
+  
+  vars:
+    required_packages:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+      - software-properties-common
+      - git
+      - htop
+      - vim
+      - ufw
+      - fail2ban
+      - unattended-upgrades
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      apt:
+        name: "{{ required_packages }}"
+        state: present
+
+    - name: Set timezone
+      timezone:
+        name: "{{ timezone }}"
+      notify: restart cron
+
+    - name: Configure swap file
+      include_tasks: tasks/swap.yml
+
+    - name: Configure firewall
+      include_tasks: tasks/firewall.yml
+
+    - name: Install Docker
+      include_tasks: tasks/docker.yml
+
+    - name: Configure fail2ban
+      include_tasks: tasks/fail2ban.yml
+
+    - name: Setup n8n application
+      include_tasks: tasks/n8n.yml
+
+    - name: Setup SSL certificates
+      include_tasks: tasks/ssl.yml
+
+  handlers:
+    - name: restart cron
+      service:
+        name: cron
+        state: restarted
+
+    - name: restart docker
+      service:
+        name: docker
+        state: restarted
+
+    - name: restart fail2ban
+      service:
+        name: fail2ban
+        state: restarted
+
+    - name: reload ufw
+      ufw:
+        state: reloaded

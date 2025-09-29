@@ -1,0 +1,56 @@
+# Docker volumes and build artifacts
+.env
+docker-compose.override.yml
+.docker/
+
+# Nginx logs and certificates
+nginx/logs/
+certbot/
+
+# PostgreSQL data
+postgres/data/
+
+# n8n data
+n8n_data/
+
+# Backup files
+backups/
+
+# Ansible vault files
+ansible/vault/
+*.vault
+
+# SSH keys
+*.pem
+*.key
+!*.key.example
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Temporary files
+tmp/
+temp/

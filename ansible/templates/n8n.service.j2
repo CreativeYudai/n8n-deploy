@@ -1,0 +1,15 @@
+[Unit]
+Description=n8n Docker Compose Application Service
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory={{ docker_data_dir }}
+ExecStart=/usr/local/bin/n8n-startup.sh
+ExecStop=/usr/local/bin/docker-compose down
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target

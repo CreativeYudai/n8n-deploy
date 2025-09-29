@@ -1,0 +1,55 @@
+---
+- name: Install certbot
+  apt:
+    name:
+      - certbot
+      - python3-certbot-nginx
+    state: present
+
+- name: Stop nginx temporarily for certificate generation
+  docker_compose:
+    project_src: "{{ docker_data_dir }}"
+    services:
+      - nginx
+    state: absent
+
+- name: Generate SSL certificate
+  command: >
+    certbot certonly --standalone
+    --email {{ certbot_email }}
+    --agree-tos
+    --no-eff-email
+    --domains {{ domain_name }}
+  args:
+    creates: "/etc/letsencrypt/live/{{ domain_name }}/fullchain.pem"
+
+- name: Copy SSL certificates to docker volume
+  copy:
+    src: "/etc/letsencrypt/live/{{ domain_name }}/"
+    dest: "{{ docker_data_dir }}/certbot/conf/live/{{ domain_name }}/"
+    remote_src: true
+    mode: preserve
+
+- name: Copy SSL archive to docker volume
+  copy:
+    src: "/etc/letsencrypt/archive/{{ domain_name }}/"
+    dest: "{{ docker_data_dir }}/certbot/conf/archive/{{ domain_name }}/"
+    remote_src: true
+    mode: preserve
+
+- name: Start nginx with SSL
+  docker_compose:
+    project_src: "{{ docker_data_dir }}"
+    services:
+      - nginx
+    state: present
+
+- name: Create certificate renewal cron job
+  cron:
+    name: "Renew Let's Encrypt certificates"
+    minute: "0"
+    hour: "12"
+    day: "*"
+    month: "*"
+    weekday: "*"
+    job: "/usr/bin/certbot renew --quiet && docker-compose -f {{ docker_data_dir }}/docker-compose.yml restart nginx"
