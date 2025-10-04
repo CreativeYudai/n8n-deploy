@@ -17,9 +17,10 @@ services:
       - WEBHOOK_URL=${WEBHOOK_URL}
       - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
       # CORS and WebSocket settings
-      - N8N_CORS_ORIGIN=https://{{ domain_name }}
+      - N8N_CORS_ORIGIN=*
       - N8N_SECURE_COOKIE=true
       - N8N_PUSH_BACKEND=websocket
+      - N8N_DISABLE_UI=false
       # Database settings
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_HOST=postgres
