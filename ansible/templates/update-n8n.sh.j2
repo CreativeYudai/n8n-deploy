@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# N8N Update Script
+# This script pulls the latest changes and restarts services
+
+set -e
+
+echo "🔄 Updating n8n deployment..."
+
+# Navigate to the deployment directory
+cd {{ docker_data_dir }}
+
+# Pull latest changes
+echo "📥 Pulling latest changes from repository..."
+git pull origin {{ git_branch }}
+
+# Check if there are any changes to docker-compose.yml or .env that require restart
+if git diff --name-only HEAD~1 HEAD | grep -E "(docker-compose\.yml|\.env)" > /dev/null; then
+    echo "🔄 Configuration files changed, restarting services..."
+    sudo docker-compose down
+    sudo docker-compose up -d
+else
+    echo "🔄 Reloading nginx configuration..."
+    sudo docker-compose exec nginx nginx -s reload
+fi
+
+echo "✅ Update completed successfully!"
+echo "🌐 N8N is available at: https://{{ domain_name }}"
+
+# Show service status
+echo "📊 Service status:"
+sudo docker-compose ps

@@ -1,50 +1,35 @@
 ---
-- name: Create n8n directory
-  file:
-    path: "{{ docker_data_dir }}"
-    state: directory
-    mode: '0755'
+- name: Install git
+  package:
+    name: git
+    state: present
 
-- name: Create n8n subdirectories
+- name: Clone or update n8n-deploy repository
+  git:
+    repo: "{{ git_repo_url }}"
+    dest: "{{ docker_data_dir }}"
+    version: "{{ git_branch }}"
+    force: yes
+
+- name: Create additional directories needed for deployment
   file:
     path: "{{ docker_data_dir }}/{{ item }}"
     state: directory
     mode: '0755'
   loop:
-    - nginx/sites-available
-    - n8n/custom-nodes
-    - postgres/init
     - certbot/conf
     - certbot/www
 
-- name: Copy docker-compose.yml
-  template:
-    src: docker-compose.yml.j2
-    dest: "{{ docker_data_dir }}/docker-compose.yml"
-    mode: '0644'
-
-- name: Copy .env file
+- name: Generate .env file from template
   template:
     src: .env.j2
     dest: "{{ docker_data_dir }}/.env"
     mode: '0600'
 
-- name: Copy nginx configuration
+- name: Create update script
   template:
-    src: nginx.conf.j2
-    dest: "{{ docker_data_dir }}/nginx/nginx.conf"
-    mode: '0644'
-
-- name: Copy nginx site configuration
-  template:
-    src: n8n.conf.j2
-    dest: "{{ docker_data_dir }}/nginx/sites-available/n8n.conf"
-    mode: '0644'
-
-- name: Copy postgres init script
-  template:
-    src: init-n8n-db.sh.j2
-    dest: "{{ docker_data_dir }}/postgres/init/init-n8n-db.sh"
+    src: update-n8n.sh.j2
+    dest: /usr/local/bin/update-n8n
     mode: '0755'
 
 - name: Start n8n services with Docker Compose
