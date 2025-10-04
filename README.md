@@ -1,103 +1,107 @@
 
 # 🚀 n8n Deploy Project
 
-**Solución completa de deployment automatizado para n8n (workflow automation) con Docker y Ansible.**
+**Complete automated deployment solution for n8n (workflow automation) with Docker and Ansible.**
 
 [![Deployment Status](https://img.shields.io/badge/deployment-successful-brightgreen)](https://n8n.yudaicreator.com)
 [![Docker](https://img.shields.io/badge/docker-ready-blue)](https://www.docker.com/)
 [![Ansible](https://img.shields.io/badge/ansible-automated-red)](https://www.ansible.com/)
 [![SSL](https://img.shields.io/badge/ssl-lets%20encrypt-orange)](https://letsencrypt.org/)
 
-## ✨ Características
+## ✨ Features
 
-### 🐳 **Stack Dockerizado Completo**
-- **n8n** - Plataforma de automatización de workflows
-- **PostgreSQL 15** - Base de datos principal con optimizaciones
-- **Redis 7** - Cache y almacenamiento en memoria
-- **Nginx Alpine** - Reverse proxy con configuración de seguridad
-- **Certbot** - Certificados SSL automáticos de Let's Encrypt
+### 🐳 **Complete Docker Stack**
+- **n8n** - Workflow automation platform
+- **PostgreSQL 15** - Main database with optimizations
+- **Redis 7** - Cache and in-memory storage
+- **Nginx Alpine** - Reverse proxy with security configuration
+- **Certbot** - Automatic SSL certificates from Let's Encrypt
 
-### 🤖 **Automatización con Ansible**
-- ✅ Instalación completa de Docker y Docker Compose  
-- ✅ Configuración de firewall UFW con reglas optimizadas
-- ✅ Protección fail2ban contra ataques de fuerza bruta
-- ✅ Configuración de swap automática para optimización de memoria
-- ✅ Certificados SSL automáticos con renovación programada
-- ✅ Auto-inicio de servicios con systemd
-- ✅ Limpieza automática de sistema y mantenimiento
-- ✅ Resolución automática de conflictos de puertos
+### 🤖 **Ansible Automation**
+- ✅ Complete Docker and Docker Compose installation  
+- ✅ UFW firewall configuration with optimized rules
+- ✅ Fail2ban protection against brute force attacks
+- ✅ Automatic swap configuration for memory optimization
+- ✅ Automatic SSL certificates with scheduled renewal
+- ✅ Auto-start services with systemd
+- ✅ Automatic system cleanup and maintenance
+- ✅ Automatic resolution of port conflicts
 
-### 🔒 **Seguridad Enterprise**
-- 🛡️ HTTPS obligatorio con certificados Let's Encrypt
-- 🛡️ Rate limiting y protección DDoS
-- 🛡️ Security headers optimizados
-- 🛡️ Firewall configurado (puertos 22, 80, 443)
-- 🛡️ Fail2ban activo contra ataques SSH y web
-- 🛡️ Passwords seguros generados automáticamente
+### 🔒 **Enterprise Security**
+- 🛡️ Mandatory HTTPS with Let's Encrypt certificates
+- 🛡️ Rate limiting and DDoS protection
+- 🛡️ Optimized security headers
+- 🛡️ Configured firewall (ports 22, 80, 443)
+- 🛡️ Active fail2ban against SSH and web attacks
+- 🛡️ Secure passwords generated automatically
 
-## 📁 Estructura del Proyecto
+## 📁 Project Structure
 
 ```
 n8n-deploy/
-├── 📄 Makefile                    # Comandos automatizados principales
-├── 🐳 docker-compose.yml          # Stack completo de servicios
-├── 🔧 .env.example               # Template de variables de entorno
-├── 📖 README.md                  # Documentación completa
+├── 📄 Makefile                    # Main automated commands
+├── 🐳 docker-compose.yml          # Complete services stack
+├── 🔧 .env.example               # Environment variables template
+├── 📖 README.md                  # Complete documentation
 │
-├── 🌐 nginx/                     # Configuración de Nginx
-│   ├── nginx.conf               # Configuración principal
+├── 🌐 nginx/                     # Nginx configuration
+│   ├── nginx.conf               # Main configuration
 │   └── sites-available/
-│       └── n8n.conf            # Site específico con SSL
+│       └── n8n.conf            # SSL-specific site
 │
-├── 🗄️ postgres/                  # Configuración de PostgreSQL
+├── 🗄️ postgres/                  # PostgreSQL configuration
 │   └── init/
-│       └── init-n8n-db.sh      # Script de inicialización
+│       └── init-n8n-db.sh      # Initialization script
 │
 ├── 🔄 n8n/
-│   └── custom-nodes/            # Nodos personalizados
+│   └── custom-nodes/            # Custom nodes
 │
-├── 🤖 ansible/                   # Automatización de deployment
-│   ├── site.yml                # Playbook principal
-│   ├── ansible.cfg             # Configuración de Ansible
-│   ├── requirements.yml        # Colecciones necesarias
+├── 🤖 ansible/                   # Deployment automation
+│   ├── site.yml                # Main playbook
+│   ├── ansible.cfg             # Ansible configuration
+│   ├── requirements.yml        # Required collections
 │   ├── inventory/
-│   │   └── hosts.yml           # Configuración de servidores
-│   ├── tasks/                  # Tareas modulares
-│   │   ├── cleanup.yml         # Limpieza de sistema
-│   │   ├── docker.yml          # Instalación Docker
-│   │   ├── fail2ban.yml        # Configuración seguridad
-│   │   ├── firewall.yml        # Configuración UFW
-│   │   ├── n8n.yml            # Deploy de n8n
-│   │   ├── ssl.yml            # Certificados SSL
-│   │   └── swap.yml           # Configuración swap
-│   └── templates/              # Templates Jinja2
+│   │   └── hosts.yml           # Server configuration
+│   ├── tasks/                  # Modular tasks
+│   │   ├── cleanup.yml         # System cleanup
+│   │   ├── docker.yml          # Docker installation
+│   │   ├── fail2ban.yml        # Security configuration
+│   │   ├── firewall.yml        # UFW configuration
+│   │   ├── n8n.yml            # n8n deployment
+│   │   ├── ssl.yml            # SSL certificates
+│   │   └── swap.yml           # Swap configuration
+│   └── templates/              # Jinja2 templates
 │       ├── docker-compose.yml.j2
 │       ├── .env.j2
 │       ├── nginx.conf.j2
 │       ├── n8n.conf.j2
 │       └── init-n8n-db.sh.j2
 │
-└── 🛠️ scripts/                   # Scripts de utilidad
-    ├── generate-keys.sh        # Generación de claves seguras
-    ├── local-deploy.sh         # Deploy local
-    ├── production-deploy.sh    # Deploy producción
-    ├── backup.sh              # Backup automático
-    ├── check-server-status.sh  # Verificación de servidor
-    ├── cleanup-server.sh      # Limpieza de servidor
-    ├── fix-port-conflicts.sh  # Resolución conflictos
-    ├── fix-ssl-links.sh       # Reparación SSL
-    └── inspect-server.sh      # Inspección completa
+├── 📖 docs/                      # Documentation
+│   └── GIT_DEPLOYMENT.md       # Git-based deployment guide
+│
+└── 🛠️ scripts/                   # Utility scripts
+    ├── deploy.sh               # Automated Git deployment
+    ├── generate-keys.sh        # Secure key generation
+    ├── local-deploy.sh         # Local deployment
+    ├── production-deploy.sh    # Production deployment
+    ├── backup.sh              # Automatic backup
+    ├── check-server-status.sh  # Server verification
+    ├── cleanup-server.sh      # Server cleanup
+    ├── fix-port-conflicts.sh  # Conflict resolution
+    ├── fix-ssl-links.sh       # SSL repair
+    └── inspect-server.sh      # Complete inspection
 ```
 
-## 🛠️ Requisitos del Sistema
+## 🛠️ System Requirements
 
-### **Para Desarrollo Local:**
+### **For Local Development:**
 - 🐳 Docker 20.10+
 - 🐳 Docker Compose 2.0+
-- 💾 4GB RAM mínimo
-- 💾 10GB espacio libre
+- 💾 4GB RAM minimum
+- 💾 10GB free space
 
-### **Para Producción:**
+### **For Production:**
 - 🤖 Ansible 2.9+
 - 🖥️ Servidor Ubuntu 20.04/22.04 LTS o Debian 11+
 - 🌐 Dominio con DNS configurado
@@ -107,68 +111,108 @@ n8n-deploy/
 
 ## ⚡ Quick Start
 
-### 🏠 **Deploy Local (5 minutos)**
+### 🏠 **Local Deploy (5 minutes)**
 
 ```bash
-# 1. Clonar repositorio
+# 1. Clone repository
 git clone https://github.com/CreativeYudai/n8n-deploy.git
 cd n8n-deploy
 
-# 2. Setup completo automático
+# 2. Complete automatic setup
 make setup
 
-# 3. Deploy local
+# 3. Local deploy
 make install-local
 
-# 4. ¡Listo! Acceder a n8n
+# 4. Ready! Access n8n
 open http://localhost:5678
 ```
 
-### 🌐 **Deploy Producción (10 minutos)**
+### 🌐 **Production Deploy (10 minutes)**
 
 ```bash
-# 1. Configurar servidor en inventario
+# 1. Configure server in inventory
 cp ansible/inventory/hosts.yml.example ansible/inventory/hosts.yml
-# Editar hosts.yml con datos de tu servidor
+# Edit hosts.yml with your server data
 
-# 2. Deploy completo automático
+# 2. Complete automatic deploy
 make install-prod
 
-# 3. ¡Listo! n8n disponible con HTTPS
-# URL: https://tu-dominio.com
+# 3. Ready! n8n available with HTTPS
+# URL: https://your-domain.com
 ```
 
-## 🎯 Comandos Principales (Makefile)
+## 🔄 Git-Based Deployment (New)
 
-### **📦 Setup y Deploy**
+### **Git-Based Deployment - Recommended for Production**
+
+Now you can make changes to your configuration and deploy them using Git, without needing to run Ansible every time.
+
+#### **🚀 Initial Setup (One time only)**
 ```bash
-make setup          # Configuración inicial completa
-make install-local   # Deploy local para desarrollo  
-make install-prod    # Deploy producción con SSL
-make clean          # Limpiar entorno local
+# 1. Initial deploy with Ansible (includes Git setup)
+cd ansible
+ansible-playbook -i inventory/hosts.yml site.yml
 ```
 
-### **🔧 Mantenimiento**
+#### **📦 Deploy Changes (Automatic Method)**
 ```bash
-make server-status   # Estado completo del servidor
-make inspect        # Inspección detallada (archivos, logs, certificados)
-make backup         # Backup de n8n y base de datos
-make cleanup-server # Limpieza automática de servidor
+# Make changes to nginx, docker-compose, etc.
+git add .
+git commit -m "Configuration update"
+
+# Automatic deploy with one command
+./scripts/deploy.sh
 ```
 
-### **🔐 Solución de Problemas**
+#### **📦 Manual Deploy**
 ```bash
-make fix-ports      # Resolver conflictos de puertos 80/443
-make fix-ssl        # Reparar enlaces de certificados SSL
-make ansible-check  # Verificar conectividad SSH
+# 1. Push changes
+git push origin main
+
+# 2. Update server
+ssh user@server "update-n8n"
 ```
 
-### **📊 Monitoreo**
+#### **🔄 Update Server Only**
 ```bash
-make logs           # Ver logs de n8n (local)
-make ansible-logs   # Ver logs de n8n (producción)
-make ansible-status # Estado de contenedores en producción
-make ansible-restart # Reiniciar servicios en producción
+# If someone else made changes and you want to update them
+ssh user@server "update-n8n"
+```
+
+> 📖 **[See complete Git Deployment documentation](docs/GIT_DEPLOYMENT.md)**
+
+## 🎯 Main Commands (Makefile)
+
+### **📦 Setup and Deploy**
+```bash
+make setup          # Complete initial configuration
+make install-local   # Local deploy for development  
+make install-prod    # Production deploy with SSL
+make clean          # Clean local environment
+```
+
+### **🔧 Maintenance**
+```bash
+make server-status   # Complete server status
+make inspect        # Detailed inspection (files, logs, certificates)
+make backup         # n8n and database backup
+make cleanup-server # Automatic server cleanup
+```
+
+### **🔐 Troubleshooting**
+```bash
+make fix-ports      # Resolve port conflicts 80/443
+make fix-ssl        # Repair SSL certificate links
+make ansible-check  # Verify SSH connectivity
+```
+
+### **📊 Monitoring**
+```bash
+make logs           # View n8n logs (local)
+make ansible-logs   # View n8n logs (production)
+make ansible-status # Container status in production
+make ansible-restart # Restart services in production
 ```
 
 ## ⚙️ Configuración
